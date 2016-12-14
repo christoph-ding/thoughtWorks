@@ -5,18 +5,43 @@
  */
 package thoughtworkschallenge;
 
-/**
- *
- * @author Pokegear
- */
+import java.io.*;
+
 public class SalesTaxCalculator {
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
-        System.out.println("calculating sales tax...");
+    public static void main(String[] args) {        
+        // name of the input file
+        String fileName =  System.getProperty("user.dir") + "/src/thoughtworkschallenge/sample1.txt";       
+        
+        System.out.println("calculating sales tax for " + fileName + "...");
+        
+        try {
+            System.out.println("reading info in " + fileName + "...");
+            
+            FileReader fileReader = 
+            new FileReader(fileName);
+            
+            BufferedReader bufferedReader = 
+            new BufferedReader(fileReader);
+            
+            String line = null;
+            
+            while((line = bufferedReader.readLine()) != null) {
+            System.out.println(line);
+            }   
+            
+        }    
+
+        catch (FileNotFoundException ex) {
+            System.out.println("problem opening " + fileName);
+            ex.printStackTrace();
+        }        
+        catch(IOException ex) {
+            System.out.println("problem reading " + fileName);
+        }
     }
     
 }

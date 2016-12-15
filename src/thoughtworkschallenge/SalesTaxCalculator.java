@@ -6,6 +6,7 @@
 package thoughtworkschallenge;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class SalesTaxCalculator {
 
@@ -27,11 +28,13 @@ public class SalesTaxCalculator {
             BufferedReader bufferedReader = 
             new BufferedReader(fileReader);
             
-            String line = null;
+            String currentLine = null;                        
             
-            while((line = bufferedReader.readLine()) != null) {
-            System.out.println(line);
-            }   
+            while((currentLine = bufferedReader.readLine()) != null) {
+//                System.out.println(currentLine);
+                parseLine(currentLine);
+                
+            }
             
         }    
 
@@ -43,5 +46,38 @@ public class SalesTaxCalculator {
             System.out.println("problem reading " + fileName);
         }
     }
+    
+    public static void parseLine(String line) {
+        // parses the line for both the item, and the price of that item
+        String[] words = line.split(" at ");
+        String[] item = words[0].split(" ", 2);
+        
+        // information we need to determine sales tax
+        Float numberBought = Float.parseFloat(item[0]);
+        String itemBought = item[1];
+        Float price = Float.parseFloat(words[words.length - 1]);
+        
+        Triplet<Float, String, Float> parsedItems = Triplet.with(
+                numberBought, itemBought, price)
+     
+        
+        System.out.println("number of items: " + numberBought);
+        System.out.println("item bought: " + itemBought);
+        System.out.println("price: " + price);
+        System.out.println("-----------------");
+        
+    }
+    
+    public static void determineTax() {
+        
+    }        
+    
+}
+
+public class parsedItems {
+    private Float numberBought;
+    private String itemBought;
+    private Float price;
+    
     
 }

@@ -6,7 +6,6 @@
 package thoughtworkschallenge;
 
 import java.io.*;
-import java.util.Arrays;
 
 public class SalesTaxCalculator {
 
@@ -31,23 +30,26 @@ public class SalesTaxCalculator {
             String currentLine = null;                        
             
             while((currentLine = bufferedReader.readLine()) != null) {
-//                System.out.println(currentLine);
-                parseLine(currentLine);
-                
+                ParsedItems parsedItems = parseLine(currentLine);
+                                
+                System.out.println("number bought: " + parsedItems.numberBought);
+                System.out.println("item bought: " + parsedItems.itemBought);
+                System.out.println("price: " + parsedItems.price);
+                System.out.println("---------------------------------");                
             }
             
         }    
 
         catch (FileNotFoundException ex) {
             System.out.println("problem opening " + fileName);
-            ex.printStackTrace();
+//            ex.printStackTrace();
         }        
         catch(IOException ex) {
             System.out.println("problem reading " + fileName);
         }
     }
     
-    public static void parseLine(String line) {
+    public static ParsedItems parseLine(String line) {
         // parses the line for both the item, and the price of that item
         String[] words = line.split(" at ");
         String[] item = words[0].split(" ", 2);
@@ -57,27 +59,12 @@ public class SalesTaxCalculator {
         String itemBought = item[1];
         Float price = Float.parseFloat(words[words.length - 1]);
         
-        Triplet<Float, String, Float> parsedItems = Triplet.with(
-                numberBought, itemBought, price)
-     
-        
-        System.out.println("number of items: " + numberBought);
-        System.out.println("item bought: " + itemBought);
-        System.out.println("price: " + price);
-        System.out.println("-----------------");
-        
+        ParsedItems parsedItems = new ParsedItems(numberBought, itemBought, price);
+                               
+        return parsedItems;
     }
     
     public static void determineTax() {
         
-    }        
-    
-}
-
-public class parsedItems {
-    private Float numberBought;
-    private String itemBought;
-    private Float price;
-    
-    
+    }           
 }

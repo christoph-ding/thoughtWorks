@@ -21,7 +21,7 @@ public class SalesTaxCalculator {
         String currentLine;
         
         // name of the input file
-        fileName =  System.getProperty("user.dir") + "/src/thoughtworkschallenge/sample2.txt";       
+        fileName =  System.getProperty("user.dir") + "/src/thoughtworkschallenge/sample1.txt";       
                 
         try {
             // this is the only value we need to calculate for the output           
@@ -36,7 +36,7 @@ public class SalesTaxCalculator {
                 ParsedItems parsedItems;
                 BigDecimal applicableRate;
                 BigDecimal moneySpent;
-                BigDecimal rate;
+//                BigDecimal rate;
                 BigDecimal salesTax;                
                 // exemptItems have a special tax rate
                 // with more time, I would make the exemptItems be an argument to the program
@@ -45,13 +45,17 @@ public class SalesTaxCalculator {
                 // get the important information from each line item in the input
                 parsedItems = parseLine(currentLine);
                 
+                System.out.println("doing for: " + parsedItems.itemBought);
+                
                 // determine the tax rate, based on what the item is                
                 applicableRate = determineTaxRate(parsedItems.itemBought, exemptItems);
                 
-                salesTax = determineTax(moneySpent, rate);
-                totalTax = totalTax.add(salesTax);                    
+//                System.out.println("item: " + parsedItems.itemBought + " rate: " + applicableRate);
+                
+//                salesTax = determineTax(moneySpent, rate);
+//                totalTax = totalTax.add(salesTax);                    
                                                 
-                System.out.println("total tax: " + totalTax);
+                System.out.println("rate for " + parsedItems.itemBought + " tax is: " + applicableRate);
             }            
         }    
 
@@ -98,18 +102,35 @@ public class SalesTaxCalculator {
     
     public static BigDecimal determineTaxRate(String itemBought, List exemptItems) {
         BigDecimal applicableRate;        
-      
-        if (parsedItems.itemBought.contains("imported")) {
-            applicableRate = 0.15;
-        } else if (!parsedItems.itemBought.contains("imported")) {
+        
+        // imported items override exemption rules
+        if (itemBought.contains("imported")) {
+            applicableRate = BigDecimal.valueOf(0.15);
+        } else if (!itemBought.contains("imported")) {
+            Boolean exemptionApplies = false;
+                        
+            for (int i = 0; i < exemptItems.size(); i++) {
+                String exemption;                
+                exemption = (String) exemptItems.get(i);
+                System.out.println("item: " + itemBought + " exempt: " + exemption);            
+                if (itemBought.contains(exemption)) {
+                    System.out.println("exemption found");
+                    exemptionApplies = true;
+                    break;
+                }                
+            }
             
-            
+            if (exemptionApplies) {
+                applicableRate = BigDecimal.valueOf(0.05);
+            } else {
+                applicableRate = BigDecimal.valueOf(0.10);    
+            }                                    
         }                
         else { 
-          // I am assuming, in all other cases, we will just use 10%
-            applicableRate = 0.10;
+          // for edge cases
+            applicableRate = BigDecimal.valueOf(0.10);
         }
-        
+                
         return applicableRate;
         
     }

@@ -7,46 +7,52 @@ package thoughtworkschallenge;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 public class SalesTaxCalculator {
     
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
+        // variable declarations
+        String fileName;
+        FileReader fileReader;
+        BufferedReader bufferedReader;
+        BigDecimal totalTax;
+        String currentLine;
+        
         // name of the input file
-        String fileName =  System.getProperty("user.dir") + "/src/thoughtworkschallenge/sample1.txt";       
+        fileName =  System.getProperty("user.dir") + "/src/thoughtworkschallenge/sample2.txt";       
                 
-        try {            
-            FileReader fileReader = 
-            new FileReader(fileName);
+        try {
+            // this is the only value we need to calculate for the output           
+            totalTax = new BigDecimal(0.00);
             
-            BufferedReader bufferedReader = 
-            new BufferedReader(fileReader);
-                                                                     
-            BigDecimal totalTax = new BigDecimal(0.00);
-            String currentLine = null;                        
+            // reading the lines in the input document
+            fileReader = new FileReader(fileName);            
+            bufferedReader = new BufferedReader(fileReader);                        
                                                             
             while((currentLine = bufferedReader.readLine()) != null) {
-                // get the important information from each line item in the input
-                ParsedItems parsedItems = parseLine(currentLine);
-                
-                // calculate the tax, and round it
-                // if not imported ...
-                
-                
-                BigDecimal moneySpent = parsedItems.price.multiply(BigDecimal.valueOf(parsedItems.numberBought));
-                moneySpent = moneySpent.setScale(2, BigDecimal.ROUND_HALF_UP);
-            
-                System.out.println("money spent: " + moneySpent + " on " + parsedItems.itemBought);
-                
-                BigDecimal rate = new BigDecimal(0.10);
-                
-                BigDecimal salesTax;
+                // variable declarations
+                ParsedItems parsedItems;
+                BigDecimal applicableRate;
+                BigDecimal moneySpent;
+                BigDecimal rate;
+                BigDecimal salesTax;                
+                // exemptItems have a special tax rate
+                // with more time, I would make the exemptItems be an argument to the program
+                List<String> exemptItems = Arrays.asList("book", "headache pills", "chocolate");                
                                 
-                salesTax = determineTax(moneySpent, rate);
-                totalTax = totalTax.add(salesTax);
+                // get the important information from each line item in the input
+                parsedItems = parseLine(currentLine);
                 
+                // determine the tax rate, based on what the item is                
+                applicableRate = determineTaxRate(parsedItems.itemBought, exemptItems);
+                
+                salesTax = determineTax(moneySpent, rate);
+                totalTax = totalTax.add(salesTax);                    
+                                                
                 System.out.println("total tax: " + totalTax);
-            }
-            
+            }            
         }    
 
         catch (FileNotFoundException ex) {
@@ -59,26 +65,52 @@ public class SalesTaxCalculator {
     }
     
     public static ParsedItems parseLine(String line) {
+        // variable declarations
+        String[] words;
+        String[] item;
+        Float numberBought;
+        String itemBought;
+        BigDecimal price;
+        ParsedItems parsedItems;
+        
         // parses the line for both the item, and the price of that item
-        String[] words = line.split(" at ");
-        String[] item = words[0].split(" ", 2);
+        words = line.split(" at ");
+        item = words[0].split(" ", 2);
         
         // information we need to determine sales tax
-        Float numberBought = Float.parseFloat(item[0]);
-        String itemBought = item[1];
-        BigDecimal price = new BigDecimal(Float.parseFloat(words[words.length - 1]));
+        numberBought = Float.parseFloat(item[0]);
+        itemBought = item[1];
+        price = new BigDecimal(Float.parseFloat(words[words.length - 1]));
         
-        ParsedItems parsedItems = new ParsedItems(numberBought, itemBought, price);
-                               
+        // that information is returned as an object
+        parsedItems = new ParsedItems(numberBought, itemBought, price);                               
         return parsedItems;
     }
     
-    public static BigDecimal determineTax(BigDecimal price, BigDecimal rate) {
-        BigDecimal taxPaid = price.multiply(rate);
+    public static BigDecimal determineTax(BigDecimal price, BigDecimal rate) {        
+        BigDecimal taxPaid;
+        
+        taxPaid = price.multiply(rate);
         taxPaid = taxPaid.setScale(2, BigDecimal.ROUND_DOWN);
-
-        System.out.println("tax: " + taxPaid);
         
         return taxPaid;
-    }           
+    }
+    
+    public static BigDecimal determineTaxRate(String itemBought, List exemptItems) {
+        BigDecimal applicableRate;        
+      
+        if (parsedItems.itemBought.contains("imported")) {
+            applicableRate = 0.15;
+        } else if (!parsedItems.itemBought.contains("imported")) {
+            
+            
+        }                
+        else { 
+          // I am assuming, in all other cases, we will just use 10%
+            applicableRate = 0.10;
+        }
+        
+        return applicableRate;
+        
+    }
 }
